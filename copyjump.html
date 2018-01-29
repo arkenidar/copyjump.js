@@ -6,11 +6,11 @@
 </head>
 <body>
 
+<button onclick="program_setup('integer_counter')">count to 255</button>
+<button onclick="program_setup('integer_sum')">sum of 2 bytes</button>
 <button onclick="program_setup('not')">NOT gate</button>
 <button onclick="program_setup('or')">OR gate</button>
-<button onclick="program_setup('sum1')">SUM (1 bit+1bit)</button>
-<button onclick="program_setup('integer_counter')">count</button>
-<button onclick="program_setup('integer_sum')">sum</button>
+<button onclick="program_setup('sum1')">half adder</button>
 <div id="log"></div>
 
 <script>
@@ -33,8 +33,23 @@ read_bit = function(source, value){
   timeout=setTimeout(step,0)
 }
 
+function bits_to_integer(bits){
+    var accumulator = 0
+    for(entry of bits.entries()){
+        accumulator += entry[1] * 2**entry[0]
+    }
+    return accumulator
+}
+
+var byte_accumulator = []
 function io_write_bit_to_output_port(bit_data){
 	log_write("out: "+bit_data+"<br>")
+
+    byte_accumulator.push(bit_data)
+    if(byte_accumulator.length==8){
+        log_write("byte: "+byte_accumulator+" to integer: "+bits_to_integer(byte_accumulator)+"<br>")
+        byte_accumulator = []
+    }
 }
 
 program_not=[
@@ -365,7 +380,12 @@ program_integer_sum=[[2, 3, 1, 15],
 [3, 6, 233, 233],
 ]
 
+var timeout = null
+
 program_setup=function(program_name){
+
+    if(timeout!=null) clearTimeout(timeout)
+
 	document.all.log.innerHTML="";
 	program=window["program_"+program_name]
     current_instruction_index=0
@@ -377,6 +397,8 @@ program_setup=function(program_name){
     }
     
     path_selector_bit=0
+
+    byte_accumulator = []
 
     timeout=setTimeout(step,0)
 }
