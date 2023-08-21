@@ -7,12 +7,18 @@
 </head>
 <body>
 
+<style>
+button { padding: 1em; margin-top: 1em; margin-right: 1em; }
+#log  { margin-top: 1em; }
+</style>
+
 <button onclick="program_setup('integer_counter')">count to 255</button>
 <button onclick="program_setup('integer_sum')">sum of 2 bytes</button>
-<button onclick="program_setup('not')">NOT gate</button>
-<button onclick="program_setup('or')">OR gate</button>
-<button onclick="program_setup('sum1')">half adder</button>
-<div id="log"></div>
+<button onclick="program_setup('not')">NOT of 1 bit</button>
+<button onclick="program_setup('or')">OR of 2 bits</button>
+<button onclick="program_setup('sum1')">sum of 2 bits</button>
+
+<div id="log">Log.</div>
 
 <script>
 function log_write(text){
@@ -20,16 +26,16 @@ function log_write(text){
 }
 
 function io_read_bit_from_input_port(){
-  html="in: <span>"
+  html="<div>input bit: "
   + "<button onclick='read_bit(this, 0)'>0</button>"
   + "<button onclick='read_bit(this, 1)'>1</button>"
-  + " (select input!)  </span>"
-	log_write(html+"<br>")
+  + " (select which bit!)  </div>"
+	log_write(html)
 }
 
 read_bit = function(source, value){
   bit_data=value
-  source.parentElement.innerHTML=value
+  source.parentElement.innerHTML=" input bit: " + value + ". "
   data_input = true
   timeout=setTimeout(step,0)
 }
@@ -44,11 +50,11 @@ function bits_to_integer(bits){
 
 var byte_accumulator = []
 function io_write_bit_to_output_port(bit_data){
-	log_write("out: "+bit_data+"<br>")
+	log_write("<div> emitted bit: "+bit_data+". </div>")
 
     byte_accumulator.push(bit_data)
     if(byte_accumulator.length==8){
-        log_write("byte: "+byte_accumulator+" to integer: "+bits_to_integer(byte_accumulator)+"<br>")
+        log_write("<div> emitted number: "+bits_to_integer(byte_accumulator)+". emitted bits: ["+ byte_accumulator.join('') +"]. </div>")
         byte_accumulator = []
     }
 }
@@ -387,7 +393,7 @@ program_setup=function(program_name){
 
     if(timeout!=null) clearTimeout(timeout)
 
-	document.all.log.innerHTML="";
+	document.all.log.innerHTML="Log.";
 	program=window["program_"+program_name]
     current_instruction_index=0
 	data_input=false
@@ -477,5 +483,8 @@ if(current_instruction_index!="INSTRUCTION_EXIT" && current_instruction_index<pr
 
 } // end of execution loop, next instruction
 </script>
+
+<script src="show-source.js"></script>
+
 </body>
 </html>
